@@ -7,7 +7,15 @@ import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-dotenv.config();
+import connectDB from "./database/db.js";
+
+import healthRoute from "./routes/health.route.js";
+import userRoute from "./routes/user.route.js";
+
+dotenv.config({ path: "./.env" });
+
+// Connect to database
+await connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,7 +29,7 @@ const limiter = rateLimit({
 
 // Security Middleware
 app.use(helmet());
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 app.use(hpp());
 app.use("/api", limiter);
 
@@ -64,6 +72,8 @@ app.use(
 );
 
 // API Routes
+app.use("/health", healthRoute);
+app.use("/api/v1/user", userRoute);
 
 // It should be always at the bottom
 // 404 handler
